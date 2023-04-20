@@ -559,7 +559,6 @@ public class ThreadBench implements Thread.UncaughtExceptionHandler {
                     }     
                    
                 }
-                LOG.info("{}",intervalSamples.size());
                 Collections.sort(intervalSamples);
                 // Compute stats on all the latencies
                 int[] latencies = new int[intervalSamples.size()];
