@@ -540,7 +540,7 @@ public class ThreadBench implements Thread.UncaughtExceptionHandler {
                 // Compute the last throughput
                 long measuredRequests = 0;
                 synchronized (testState) {
-                    private final ArrayList<LatencyRecord.Sample> intervalSamples = new ArrayList<>();
+                    ArrayList<LatencyRecord.Sample> intervalSamples = new ArrayList<>();
                     int workerIndex = 0;
                     for (Worker<?> w : workers) {
                         long workerRequest = w.getAndResetIntervalRequests();
@@ -554,7 +554,7 @@ public class ThreadBench implements Thread.UncaughtExceptionHandler {
                         }
                         lastProcessedRequest[workerIndex] += workerRequest;
                         workerIndex++;
-                        measuredRequests += workerRequest
+                        measuredRequests += workerRequest;
                     }     
                     Collections.sort(intervalSamples);
                 }
