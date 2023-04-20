@@ -554,7 +554,7 @@ public class ThreadBench implements Thread.UncaughtExceptionHandler {
                         }
                         lastProcessedRequest[workerIndex] += workerRequest;
                         workerIndex++;
-                        measuredRequests += workerRequest
+                        measuredRequests += workerRequest;
                     }     
                     Collections.sort(intervalSamples);
                 }
