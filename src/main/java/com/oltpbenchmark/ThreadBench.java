@@ -514,6 +514,7 @@ public class ThreadBench implements Thread.UncaughtExceptionHandler {
 
     private class MonitorThread extends Thread {
         private final int intervalMonitor;
+        private int lastProcessedRequest[] = new int[workers.size()];
 
         {
             this.setDaemon(true);
@@ -539,13 +540,34 @@ public class ThreadBench implements Thread.UncaughtExceptionHandler {
                 // Compute the last throughput
                 long measuredRequests = 0;
                 synchronized (testState) {
+                    private final ArrayList<LatencyRecord.Sample> intervalSamples = new ArrayList<>();
+                    int workerIndex = 0;
                     for (Worker<?> w : workers) {
-                        measuredRequests += w.getAndResetIntervalRequests();
-                    }
+                        long workerRequest = w.getAndResetIntervalRequests();
+                        
+                        // get relevant sample
+                        long count = 0;
+                        for (LatencyRecord.Sample sample : w.getLatencyRecords()) {
+                            count++;
+                            if(lastProcessedRequest[workerIndex] == 0 || count > lastProcessedRequest[workerIndex] )
+                                intervalSamples.add(sample);
+                        }
+                        lastProcessedRequest[workerIndex] += workerRequest;
+                        workerIndex++;
+                        measuredRequests += workerRequest
+                    }     
+                    Collections.sort(intervalSamples);
                 }
+
+                // Compute stats on all the latencies
+                int[] latencies = new int[intervalSamples.size()];
+                for (int i = 0; i < intervalSamples.size(); ++i) {
+                    latencies[i] = intervalSamples.get(i).getLatencyMicrosecond();
+                }
+                DistributionStatistics stats = DistributionStatistics.computeStatistics(latencies);
                 double seconds = this.intervalMonitor / 1000d;
                 double tps = (double) measuredRequests / seconds;
-                LOG.info("Throughput: {} txn/sec", tps);
+                LOG.info("Throughput: {} txn/sec, LATENCY(micro-sec) - Mean: {}, SD: {}, p50: {}, p90: {}, p95: {}, p99: {}", tps, stats.average, stats.standardDeviation, stats.percentiles[2], stats.percentiles[4], stats.percentiles[5], stats.percentiles[6]);
             }
         }
     }
