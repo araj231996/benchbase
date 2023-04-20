@@ -555,8 +555,9 @@ public class ThreadBench implements Thread.UncaughtExceptionHandler {
                         lastProcessedRequest[workerIndex] += workerRequest;
                         workerIndex++;
                         measuredRequests += workerRequest;
+                        Collections.sort(intervalSamples);
                     }     
-                    Collections.sort(intervalSamples);
+                    
                 }
 
                 // Compute stats on all the latencies
