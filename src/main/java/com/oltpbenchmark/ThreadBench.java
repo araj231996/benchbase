@@ -539,7 +539,7 @@ public class ThreadBench implements Thread.UncaughtExceptionHandler {
 
                 // Compute the last throughput
                 long measuredRequests = 0;
-                ArrayList<LatencyRecord.Sample> intervalSamples = new ArrayList<>();
+                ArrayList<Integer> intervalSamples = new ArrayList<>();
                 synchronized (testState) {
                     int workerIndex = 0;
                     for (Worker<?> w : workers) {
@@ -550,7 +550,7 @@ public class ThreadBench implements Thread.UncaughtExceptionHandler {
                         for (LatencyRecord.Sample sample : w.getLatencyRecords()) {
                             count++;
                             if(lastProcessedRequest[workerIndex] == 0 || count > lastProcessedRequest[workerIndex] )
-                                intervalSamples.add(sample);
+                                intervalSamples.add(sample.getLatencyMicrosecond());
                                 
                         }
                         lastProcessedRequest[workerIndex] += workerRequest;
@@ -564,7 +564,7 @@ public class ThreadBench implements Thread.UncaughtExceptionHandler {
                 // Compute stats on all the latencies
                 int[] latencies = new int[intervalSamples.size()];
                 for (int i = 0; i < intervalSamples.size(); ++i) {
-                    latencies[i] = intervalSamples.get(i).getLatencyMicrosecond();
+                    latencies[i] = intervalSamples.get(i);
                 }
                 DistributionStatistics stats = DistributionStatistics.computeStatistics(latencies);
                 double seconds = this.intervalMonitor / 1000d;
