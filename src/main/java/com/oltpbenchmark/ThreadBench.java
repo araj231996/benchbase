@@ -567,7 +567,7 @@ public class ThreadBench implements Thread.UncaughtExceptionHandler {
                 DistributionStatistics stats = DistributionStatistics.computeStatistics(latencies);
                 double seconds = this.intervalMonitor / 1000d;
                 double tps = (double) measuredRequests / seconds;
-                LOG.info("Throughput: {} txn/sec, LATENCY(micro-sec) - Mean: {}, SD: {}, p50: {}, p90: {}, p95: {}, p99: {}", tps, stats.average, stats.standardDeviation, stats.percentiles[2], stats.percentiles[4], stats.percentiles[5], stats.percentiles[6]);
+                LOG.info("Throughput: {} txn/sec, LATENCY(micro-sec) - Mean: {}, SD: {}, p50: {}, p90: {}, p95: {}, p99: {}", tps, stats.getAverage(), stats.getStandardDeviation(), stats.getMedian(), stats.get90thPercentile(), stats.get95thPercentile(), stats.get99thPercentile());
             }
         }
     }
