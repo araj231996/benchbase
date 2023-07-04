@@ -20,6 +20,8 @@ package com.oltpbenchmark;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Efficiently stores a record of (start time, latency) pairs.
@@ -29,7 +31,7 @@ public class LatencyRecord implements Iterable<LatencyRecord.Sample> {
      * Allocate space for 500k samples at a time
      */
     static final int ALLOC_SIZE = 500000;
-
+    private static final Logger LOG = LoggerFactory.getLogger(LatencyRecord.class);
     /**
      * Contains (start time, latency, transactionType, workerid, phaseid) pentiplets
      * in microsecond form. The start times are "compressed" by encoding them as
@@ -60,7 +62,7 @@ public class LatencyRecord implements Iterable<LatencyRecord.Sample> {
         long startOffsetNanosecond = (startNanosecond - lastNanosecond + 500);
 
         int latencyMicroseconds = (int) ((endNanosecond - startNanosecond + 500) / 1000);
-
+        LOG.info("Latency observed (micro-sec): {}", latencyMicroseconds);
 
         chunk[nextIndex] = new Sample(transType, startOffsetNanosecond, latencyMicroseconds, workerId, phaseId);
         ++nextIndex;
